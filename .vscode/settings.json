@@ -1,3 +1,15 @@
 {
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": true,
+  "editor.formatOnType": false,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "files.exclude": {
+    "*/.freezed.dart": true,
+    "*/.g.dart": true
+  },
+  "editor.wordWrapColumn": 120,
   "dart.flutterSdkPath": ".fvm/versions/3.32.4"
 }
