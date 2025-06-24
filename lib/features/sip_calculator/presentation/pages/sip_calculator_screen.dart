@@ -398,7 +398,7 @@ class _SIPCalculatorScreenState extends State<SIPCalculatorScreen> {
                     const SizedBox(height: 12),
                     const Divider(),
                     const SizedBox(height: 12),
-                    _buildResultRow('Total value', _totalValue, isTotal: true),
+                    _buildResultRow('Total Amount', _totalValue, isTotal: true),
                   ],
                 ),
               ),
