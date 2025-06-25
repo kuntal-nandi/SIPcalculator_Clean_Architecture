@@ -11,6 +11,15 @@ class GetSIPResultUsecase
 
   GetSIPResultUsecase(this._calculatorRepository);
   @override
+  /// Calls [_calculatorRepository.calculateSIPFutureValue] with the given
+  /// [SIPData].
+  ///
+  /// Returns a [Future] containing a [DataState] which is either a [DataSuccess]
+  /// containing a [CalculatedResultEntity] or a [DataFailed] containing an
+  /// exception thrown by the repository.
+  ///
+  /// The [CalculatedResultEntity] contains the total returns from the
+  /// [SIPData].
   Future<DataState<CalculatedResultEntity>> call({SIPData? params}) {
     return _calculatorRepository.calculateSIPFutureValue(sipData: params!);
   }
