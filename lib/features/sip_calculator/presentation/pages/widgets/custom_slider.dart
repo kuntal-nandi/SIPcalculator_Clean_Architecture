@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class CustomSliderWidget extends StatelessWidget {
+class CustomSliderWidget extends StatefulWidget {
   final String title;
   final double value;
   final double min;
@@ -12,6 +13,7 @@ class CustomSliderWidget extends StatelessWidget {
   final Function(String) onTextChanged;
   final String? prefix;
   final String? suffix;
+  final List<TextInputFormatter>? inputFormatters;
 
   const CustomSliderWidget({
     super.key,
@@ -26,7 +28,20 @@ class CustomSliderWidget extends StatelessWidget {
     this.prefix,
     this.suffix,
     this.validator,
+    this.inputFormatters,
   });
+
+  @override
+  State<CustomSliderWidget> createState() => _CustomSliderWidgetState();
+}
+
+class _CustomSliderWidgetState extends State<CustomSliderWidget> {
+  bool _hasError = false;
+  void _setError(bool hasError) {
+    setState(() {
+      _hasError = hasError;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +65,7 @@ class CustomSliderWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                title,
+                widget.title,
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -58,30 +73,63 @@ class CustomSliderWidget extends StatelessWidget {
               ),
               Container(
                 width: 120,
-                height: 40,
+                height: 50,
+                alignment: Alignment.center,
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: Colors.teal[50],
-                  borderRadius: BorderRadius.circular(8),
+                  color: _hasError ? Colors.red[50] : Colors.teal[50],
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
                   children: [
-                    if (prefix != null)
+                    if (widget.prefix != null)
                       Text(
-                        prefix!,
-                        style: const TextStyle(
-                          color: Colors.teal,
+                        widget.prefix!,
+                        style: TextStyle(
+                          color: _hasError ? Colors.red[700] : Colors.teal,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     Expanded(
                       child: TextFormField(
-                        controller: controller,
-                        validator: validator,
+                        controller: widget.controller,
+                        inputFormatters: widget.inputFormatters,
+                        textInputAction: TextInputAction.done,
+                        validator: widget.validator,
                         keyboardType: TextInputType.number,
-                        onChanged: onTextChanged,
-                        style: const TextStyle(
-                          color: Colors.teal,
+                        onChanged: (e) {
+                          if (widget.validator == null) {
+                            _setError(false);
+                            widget.onTextChanged(e);
+                          } else if (widget.validator != null &&
+                              widget.validator!(e) != null &&
+                              e.isNotEmpty) {
+                            // If the input is invalid, we do not call onTextChanged
+                            // to prevent the slider from updating with invalid input.
+                            // Instead, we can show an error message or handle it accordingly.
+                            _setError(true);
+                            // Show a snackbar or any other error handling mechanism
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                margin: EdgeInsets.all(16),
+                                behavior: SnackBarBehavior.floating,
+                                duration: Duration(seconds: 2),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                dismissDirection: DismissDirection.horizontal,
+                                content: Text(widget.validator!(e)!),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          } else {
+                            _setError(false);
+                            widget.onTextChanged(e);
+                          }
+                        },
+                        style: TextStyle(
+                          color: _hasError ? Colors.red[700] : Colors.teal,
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
@@ -89,14 +137,16 @@ class CustomSliderWidget extends StatelessWidget {
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                         ),
+                        errorBuilder: (context, errorText) =>
+                            SizedBox.shrink(), // Hide error text if validator is provided
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    if (suffix != null)
+                    if (widget.suffix != null)
                       Text(
-                        suffix!,
-                        style: const TextStyle(
-                          color: Colors.teal,
+                        widget.suffix!,
+                        style: TextStyle(
+                          color: _hasError ? Colors.red[700] : Colors.teal,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -116,11 +166,14 @@ class CustomSliderWidget extends StatelessWidget {
               overlayShape: const RoundSliderOverlayShape(overlayRadius: 20),
             ),
             child: Slider(
-              value: value,
-              min: min,
-              max: max,
-              divisions: divisions,
-              onChanged: onSliderChanged,
+              value: widget.value,
+              min: widget.min,
+              max: widget.max,
+              divisions: widget.divisions,
+              onChanged: (e) {
+                _setError(false);
+                widget.onSliderChanged(e);
+              },
             ),
           ),
         ],

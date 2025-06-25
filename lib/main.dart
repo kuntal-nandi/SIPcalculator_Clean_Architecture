@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:sip_calculator_clean_architecture/features/sip_calculator/presentation/pages/sip_calculator_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sip_calculator_clean_architecture/config/routes/app_routes.dart';
+import 'package:sip_calculator_clean_architecture/features/sip_calculator/presentation/bloc/sip_calculator_bloc.dart';
+
+import 'config/theme/app_theme.dart';
+import 'injection_container.dart';
 
 void main() {
+  initializeDependencies();
+  // Ensure that the Flutter binding is initialized before running the app
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
@@ -11,21 +19,22 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'SIP Calculator',
-      builder: (context, child) => GestureDetector(
-        onTap: () {
-          FocusScope.of(context).unfocus(); // Dismiss the keyboard on tap
-        },
-        child: child,
+    return BlocProvider<SipCalculatorBloc>(
+      create: (context) => sl<SipCalculatorBloc>(),
+      child: MaterialApp.router(
+        title: 'SIP Calculator',
+        builder: (context, child) => GestureDetector(
+          onTap: () {
+            FocusScope.of(context).unfocus(); // Dismiss the keyboard on tap
+          },
+          child: child,
+        ),
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        // darkTheme: AppTheme.darkTheme,
+        // themeMode: ThemeMode.system,
+        routerConfig: AppRoutes.router,
       ),
-      debugShowCheckedModeBanner: false,
-      // themeMode: ThemeMode.system,
-      // darkTheme: ThemeData.dark(),
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-      ),
-      home: const SIPCalculatorScreen(),
     );
   }
 }

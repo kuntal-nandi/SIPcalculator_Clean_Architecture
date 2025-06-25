@@ -1,3 +1,5 @@
+import 'package:sip_calculator_clean_architecture/common/helper/enums.dart';
+
 import 'typedef_helpers.dart';
 
 extension TimePeriodX on TimePeriod {
@@ -14,4 +16,8 @@ extension MonthlyInvestmentX on MonthlyInvestment {
   double get toDouble => this;
   InvestmentAmount totalInvestmentAmount(TimePeriod timePeriod) =>
       (this * timePeriod.totalMonths).toDouble();
+}
+
+extension InvestmentTypeX on InvestmentType {
+  bool get isSIP => this == InvestmentType.SIP;
 }

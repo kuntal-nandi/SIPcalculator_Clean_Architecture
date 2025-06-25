@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:sip_calculator_clean_architecture/core/resources/data_state.dart';
@@ -26,14 +28,15 @@ class SipCalculatorBloc extends Bloc<SipCalculatorEvent, SipCalculatorState> {
       SipCalculatorEvent event,
       Emitter<SipCalculatorState> emit,
     ) async {
-      await event.map(
+      await event.mapSwitch<FutureOr<void>>(
         started: (value) {
           emit(SipCalculatorState.initial());
         },
         investmentTypeChanged: (value) {
           emit(
-            SipCalculatorState.initial().copyWith(
+            state.copyWith(
               investmentType: value.investmentType,
+              calculatedResult: CalculatedResultEntity.initial(),
             ),
           );
         },

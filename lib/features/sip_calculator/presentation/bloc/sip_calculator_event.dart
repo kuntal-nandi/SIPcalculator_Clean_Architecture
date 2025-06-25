@@ -17,17 +17,29 @@ class SipCalculatorEvent with _$SipCalculatorEvent {
   const factory SipCalculatorEvent.calculateClicked() = CalculateSIP;
 }
 
-extension SipCalculatorEventX on SipCalculatorEvent {
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(Started value) started,
-    required TResult Function(InvestmentTypeChanged value)
-    investmentTypeChanged,
-    required TResult Function(AmountChanged value) amountChanged,
-    required TResult Function(ReturnRateChanged value) returnRateChanged,
-    required TResult Function(TimePeriodChanged value) timePeriodChanged,
-    required TResult Function(CalculateSIP value) calculateClicked,
-  }) => throw UnimplementedError(
-    'SipCalculatorEvent.map is not implemented. Please implement it in your code.',
-  );
+extension SipCalculatorEventSwitch on SipCalculatorEvent {
+  T? mapSwitch<T>({
+    required T Function(Started) started,
+    required T Function(InvestmentTypeChanged) investmentTypeChanged,
+    required T Function(AmountChanged) amountChanged,
+    required T Function(ReturnRateChanged) returnRateChanged,
+    required T Function(TimePeriodChanged) timePeriodChanged,
+    required T Function(CalculateSIP) calculateClicked,
+  }) {
+    switch (this) {
+      case final Started e:
+        return started(e);
+      case final InvestmentTypeChanged e:
+        return investmentTypeChanged(e);
+      case final AmountChanged e:
+        return amountChanged(e);
+      case final ReturnRateChanged e:
+        return returnRateChanged(e);
+      case final TimePeriodChanged e:
+        return timePeriodChanged(e);
+      case final CalculateSIP e:
+        return calculateClicked(e);
+    }
+    return null;
+  }
 }
